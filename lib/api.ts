@@ -12,7 +12,15 @@ export async function getIpInfo(): Promise<IpInfo> {
         });
 
         if (!res.ok) {
-            throw new Error("Failed to fetch IP info");
+            let errorMessage = "Failed to fetch IP info";
+            try {
+                const errorData = await res.json();
+                errorMessage = errorData.error || errorData.detail || res.statusText;
+            } catch (e) {
+                errorMessage = res.statusText;
+            }
+            console.error("API Error Response:", errorMessage);
+            throw new Error(errorMessage);
         }
 
         return res.json();
